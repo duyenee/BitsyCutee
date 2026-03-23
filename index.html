@@ -9,8 +9,6 @@
         .bitsy-bg { background-color: #000000; }
         .bitsy-yellow-text { color: #facc15; }
         .chat-bubble { border-radius: 20px; }
-        
-        /* Avatar Styling - Uses Bitsy.png from your repository */
         .bitsy-avatar-container {
             width: 3rem; height: 3rem;
             border-radius: 9999px;
@@ -21,15 +19,12 @@
             justify-content: center;
         }
         .bitsy-avatar-img { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* Banner Styling - Uses SAHbanner.jpg from your repository */
         .hero-banner {
             background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('SAHbanner.jpg');
             background-size: cover;
             background-position: center;
             border-bottom: 1px solid #1a1a1a;
         }
-
         .typing-dots span { animation: blink 1.4s infinite both; }
         .typing-dots span:nth-child(2) { animation-delay: .2s; }
         .typing-dots span:nth-child(3) { animation-delay: .4s; }
@@ -66,7 +61,7 @@
             </div>
             <div class="bg-[#111] p-4 chat-bubble max-w-[85%] text-sm border border-gray-800">
                 <p class="mb-1 text-yellow-500 font-bold text-[10px] uppercase tracking-widest">Bitsy</p>
-                Hi Henry! I am now connected to my ChatGPT brain. How can I help you explore Sahara AI today?
+                Bitsy is ready! How can I help you explore Sahara AI today?
             </div>
         </div>
     </main>
@@ -89,53 +84,6 @@
             const userText = input.value.trim();
             if (!userText) return;
 
-            // Display User Message
             chatBox.innerHTML += `
                 <div class="flex gap-4 mb-8 flex-row-reverse">
-                    <div class="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-black font-bold text-[10px]">YOU</div>
-                    <div class="bg-yellow-400 text-black p-4 chat-bubble max-w-[85%] text-sm font-medium">
-                        ${userText}
-                    </div>
-                </div>`;
-            
-            input.value = '';
-
-            // Bitsy Thinking State
-            const thinkingId = "bitsy-" + Date.now();
-            chatBox.innerHTML += `
-                <div class="flex gap-4 mb-8" id="${thinkingId}">
-                    <div class="bitsy-avatar-container flex-shrink-0">
-                        <img src="Bitsy.png" alt="Bitsy" class="bitsy-avatar-img">
-                    </div>
-                    <div class="bg-[#111] p-4 chat-bubble max-w-[85%] text-sm border border-gray-800">
-                        <div class="typing-dots italic text-gray-500 text-xs">Bitsy is thinking<span>.</span><span>.</span><span>.</span></div>
-                    </div>
-                </div>`;
-            
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            try {
-                // Call your Vercel Serverless Function
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: userText }),
-                });
-                const data = await response.json();
-
-                // Replace thinking state with real AI response
-                const responseDiv = document.getElementById(thinkingId).querySelector('.chat-bubble');
-                responseDiv.innerHTML = `
-                    <p class="mb-1 text-yellow-500 font-bold text-[10px] uppercase tracking-widest">Bitsy</p>
-                    ${data.reply}
-                `;
-            } catch (error) {
-                const responseDiv = document.getElementById(thinkingId).querySelector('.chat-bubble');
-                responseDiv.innerHTML = `<p class="text-red-500 text-xs">Error: Bitsy's brain is offline. Check your OpenAI credits or Vercel Environment Variables.</p>`;
-            }
-            
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-    </script>
-</body>
-</html>
+                    <div class="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center
