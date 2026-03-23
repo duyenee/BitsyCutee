@@ -5,31 +5,41 @@ export default async function handler(req, res) {
   }
 
   const { message } = req.body;
+  // Lấy API Key từ biến môi trường Vercel
+  const API_KEY = process.env.GEMINI_API_KEY;
+
+  if (!API_KEY) {
+    return res.status(500).json({ reply: "Lỗi: Thiếu GEMINI_API_KEY trong Vercel Environment Variables." });
+  }
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Gọi API của Google Gemini (Model 1.5 Flash cực nhanh và miễn phí)
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [
-          { role: "system", content: "You are Bitsy, a smart AI Agent for Sahara AI. You help Henry with Web3 and mechatronics." },
-          { role: "user", content: message }
-        ],
+        contents: [{
+          parts: [{
+            text: `You are Bitsy, a smart AI Agent for Sahara AI. You help Henry with Web3 and mechatronics. Answer concisely. User says: ${message}`
+          }]
+        }]
       }),
     });
 
     const data = await response.json();
 
+    // Kiểm tra nếu có lỗi từ phía Google
     if (data.error) {
-      return res.status(500).json({ reply: "OpenAI Error: " + data.error.message });
+      return res.status(500).json({ reply: "Google AI Error: " + data.error.message });
     }
 
-    res.status(200).json({ reply: data.choices[0].message.content });
+    // Lấy nội dung phản hồi từ cấu trúc dữ liệu của Gemini
+    const reply = data.candidates[0].content.parts[0].text;
+    res.status(200).json({ reply: reply });
+
   } catch (error) {
-    res.status(500).json({ error: "Failed to connect to AI brain" });
+    res.status(500).json({ error: "Không thể kết nối với não bộ Gemini." });
   }
 }
