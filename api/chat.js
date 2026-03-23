@@ -6,8 +6,9 @@ export default async function handler(req, res) {
   const { message } = req.body;
   const TOGETHER_API_KEY = process.env.TOGETHER_API_KEY;
 
+  // Safety check for the environment variable
   if (!TOGETHER_API_KEY) {
-    return res.status(500).json({ reply: "Configuration Error: TOGETHER_API_KEY is missing." });
+    return res.status(500).json({ reply: "Configuration Error: TOGETHER_API_KEY is missing on Vercel." });
   }
 
   try {
@@ -22,7 +23,7 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: "You are Bitsy, a smart AI Agent for Sahara AI. Your tone is professional, witty, and helpful. You are assisting Henry with Web3 and AI infrastructure. Always keep responses concise and in English."
+            content: "You are Bitsy, a smart AI Agent for Sahara AI. Your tone is professional, witty, and helpful. You are assisting Henry with Web3 and AI infrastructure. Keep responses concise and always in English."
           },
           {
             role: "user",
@@ -30,10 +31,7 @@ export default async function handler(req, res) {
           }
         ],
         max_tokens: 512,
-        temperature: 0.7,
-        top_p: 0.7,
-        top_k: 50,
-        repetition_penalty: 1
+        temperature: 0.7
       })
     });
 
