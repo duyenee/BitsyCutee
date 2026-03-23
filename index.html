@@ -3,58 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BitsySAH - Web Agent</title>
+    <title>BitsySAH - Sahara AI Agent</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .hero-banner {
-            background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('SAHbanner.jpg');
-            background-size: cover; background-position: center;
+        .bitsy-bg { background-color: #000000; }
+        .bitsy-yellow-text { color: #facc15; }
+        .chat-bubble { border-radius: 20px; }
+        
+        /* Avatar Styling - Uses Bitsy.png from your repository */
+        .bitsy-avatar-container {
+            width: 3rem; height: 3rem;
+            border-radius: 9999px;
+            overflow: hidden;
+            border: 2px solid #facc15;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .bitsy-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #facc15; }
+        .bitsy-avatar-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Banner Styling - Uses SAHbanner.jpg from your repository */
+        .hero-banner {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('SAHbanner.jpg');
+            background-size: cover;
+            background-position: center;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .typing-dots span { animation: blink 1.4s infinite both; }
+        .typing-dots span:nth-child(2) { animation-delay: .2s; }
+        .typing-dots span:nth-child(3) { animation-delay: .4s; }
+        @keyframes blink { 0% { opacity: .2; } 20% { opacity: 1; } 100% { opacity: .2; } }
     </style>
 </head>
-<body class="bg-black text-white min-h-screen flex flex-col">
+<body class="bitsy-bg text-white font-sans min-h-screen flex flex-col">
 
-    <section class="hero-banner py-12 text-center border-b border-gray-800">
-        <h1 class="text-4xl font-bold uppercase italic">AI For <span class="text-yellow-400">Market Intelligence</span></h1>
-        <p class="text-gray-400 mt-2">Powered by Sahara AI Infrastructure</p>
+    <header class="p-4 border-b border-gray-900 flex justify-between items-center sticky top-0 bg-black/80 backdrop-blur-md z-30">
+        <div class="flex items-center gap-3">
+            <div class="bitsy-avatar-container">
+                <img src="Bitsy.png" alt="Bitsy" class="bitsy-avatar-img">
+            </div>
+            <h1 class="text-xl font-bold tracking-tight text-white">BitsySAH</h1>
+        </div>
+        <span class="text-[10px] text-gray-500 font-mono">SAHARA_NETWORK_v1</span>
+    </header>
+
+    <section class="hero-banner w-full py-12 px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-5xl font-black mb-2 uppercase italic">
+                AI For <span class="bitsy-yellow-text">Market Intelligence</span>
+            </h2>
+            <p class="text-gray-400 text-xs md:text-sm font-light tracking-wide">
+                Decentralized AI Infrastructure by Sahara AI
+            </p>
+        </div>
     </section>
 
-    <main class="flex-grow p-6 max-w-2xl mx-auto w-full" id="chat-box">
-        <div class="flex gap-4 items-start mb-6">
-            <img src="Bitsy.png" class="bitsy-avatar" alt="Bitsy">
-            <div class="bg-gray-900 p-4 rounded-2xl border border-gray-800">
-                Hi! I'm your Bitsy Agent. Let's communicate!
+    <main class="flex-grow p-4 md:p-8 overflow-y-auto max-w-3xl mx-auto w-full" id="chat-box">
+        <div class="flex gap-4 mb-8">
+            <div class="bitsy-avatar-container flex-shrink-0">
+                <img src="Bitsy.png" alt="Bitsy" class="bitsy-avatar-img">
+            </div>
+            <div class="bg-[#111] p-4 chat-bubble max-w-[85%] text-sm border border-gray-800">
+                <p class="mb-1 text-yellow-500 font-bold text-[10px] uppercase tracking-widest">Bitsy</p>
+                Hi Henry! I'm Bitsy 🦊. I'm connected to my AI brain now. How can I help you with Sahara AI or your projects today?
             </div>
         </div>
     </main>
 
-    <footer class="p-6 bg-black border-t border-gray-900">
-        <div class="max-w-2xl mx-auto flex gap-3">
-            <input type="text" id="user-input" placeholder="Type a message..." class="flex-grow bg-gray-900 rounded-xl px-4 py-3 outline-none border border-gray-800">
-            <button onclick="sendMessage()" class="bg-yellow-400 text-black px-6 py-3 rounded-xl font-bold">Send</button>
+    <footer class="p-4 md:p-6 bg-black border-t border-gray-900 sticky bottom-0">
+        <div class="max-w-3xl mx-auto flex gap-3 bg-[#111] rounded-2xl p-2 items-center border border-gray-800">
+            <input type="text" id="user-input" placeholder="Type a message..." 
+                class="bg-transparent border-none focus:ring-0 flex-grow px-4 py-3 text-sm outline-none text-white"
+                onkeypress="if(event.key === 'Enter') sendMessage()">
+            <button onclick="sendMessage()" class="bg-yellow-400 text-black px-6 py-3 rounded-xl font-black hover:bg-yellow-300 transition-all active:scale-95 uppercase text-[10px]">
+                Send
+            </button>
         </div>
     </footer>
 
     <script>
-        function sendMessage() {
+        async function sendMessage() {
             const input = document.getElementById('user-input');
             const chatBox = document.getElementById('chat-box');
-            if (!input.value) return;
+            const userText = input.value.trim();
+            if (!userText) return;
 
-            // User message
-            chatBox.innerHTML += `<div class="text-right mb-6"><span class="bg-yellow-400 text-black p-4 rounded-2xl inline-block">${input.value}</span></div>`;
+            // Display User Message
+            chatBox.innerHTML += `
+                <div class="flex gap-4 mb-8 flex-row-reverse">
+                    <div class="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-black font-bold text-[10px]">YOU</div>
+                    <div class="bg-yellow-400 text-black p-4 chat-bubble max-w-[85%] text-sm font-medium">
+                        ${userText}
+                    </div>
+                </div>`;
             
-            // Bitsy response
-            setTimeout(() => {
-                chatBox.innerHTML += `
-                    <div class="flex gap-4 items-start mb-6">
-                        <img src="Bitsy.png" class="bitsy-avatar">
-                        <div class="bg-gray-900 p-4 rounded-2xl border border-gray-800">Processing your request on Sahara AI...</div>
-                    </div>`;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }, 1000);
             input.value = '';
+
+            // Bitsy Thinking State
+            const thinkingId = "bitsy-" + Date.now();
+            chatBox.innerHTML += `
+                <div class="flex gap-4 mb-8" id="${thinkingId}">
+                    <div class="bitsy-avatar-container flex-shrink-0">
+                        <img src="Bitsy.png" alt="Bitsy" class="bitsy-avatar-img">
+                    </div>
+                    <div class="bg-[#111] p-4 chat-bubble max-w-[85%] text-sm border border-gray-800">
+                        <div class="typing-dots italic text-gray-500 text-xs">Bitsy is thinking<span>.</span><span>.</span><span>.</span></div>
+                    </div>
+                </div>`;
+            
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                // Call your Vercel Serverless Function
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: userText }),
+                });
+                const data = await response.json();
+
+                // Replace thinking state with real AI response
+                const responseDiv = document.getElementById(thinkingId).querySelector('.chat-bubble');
+                responseDiv.innerHTML = `
+                    <p class="mb-1 text-yellow-500 font-bold text-[10px] uppercase tracking-widest">Bitsy</p>
+                    ${data.reply}
+                `;
+            } catch (error) {
+                const responseDiv = document.getElementById(thinkingId).querySelector('.chat-bubble');
+                responseDiv.innerHTML = `<p class="text-red-500 text-xs">Error: Could not connect to the AI brain. Check your Vercel Environment Variables.</p>`;
+            }
+            
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
     </script>
 </body>
