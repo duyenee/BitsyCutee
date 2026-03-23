@@ -4,47 +4,46 @@ export default async function handler(req, res) {
   }
 
   const { message } = req.body;
-  const TOGETHER_API_KEY = process.env.TOGETHER_API_KEY;
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-  // Safety check for the environment variable
-  if (!TOGETHER_API_KEY) {
-    return res.status(500).json({ reply: "Configuration Error: TOGETHER_API_KEY is missing on Vercel." });
+  if (!GEMINI_API_KEY) {
+    return res.status(500).json({ reply: "Configuration Error: GEMINI_API_KEY is missing on Vercel." });
   }
 
   try {
-    const response = await fetch("https://api.together.xyz/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${TOGETHER_API_KEY}`,
-        "Content-Type": "application/json"
-      },
+    // Using stable v1 API and standard gemini-1.5-flash model
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: "meta-llama/Llama-3-70b-chat-hf",
-        messages: [
-          {
-            role: "system",
-            content: "You are Bitsy, a smart AI Agent for Sahara AI. Your tone is professional, witty, and helpful. You are assisting Henry with Web3 and AI infrastructure. Keep responses concise and always in English."
-          },
-          {
-            role: "user",
-            content: message
-          }
-        ],
-        max_tokens: 512,
-        temperature: 0.7
-      })
+        contents: [{
+          parts: [{
+            text: `System: You are Bitsy, a smart AI Agent for Sahara AI. Your tone is professional, witty, and helpful. You are assisting Henry with Web3 and AI infrastructure. Keep responses concise and always in English.
+            
+            User message: ${message}`
+          }]
+        }]
+      }),
     });
 
     const data = await response.json();
 
+    // Check for Google-specific errors
     if (data.error) {
-      return res.status(500).json({ reply: `Together AI Error: ${data.error.message}` });
+      return res.status(500).json({ reply: `Google Error: ${data.error.message}` });
     }
 
-    const reply = data.choices[0].message.content;
-    res.status(200).json({ reply: reply });
+    // Extracting the text response safely
+    if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
+      const reply = data.candidates[0].content.parts[0].text;
+      res.status(200).json({ reply: reply });
+    } else {
+      res.status(500).json({ reply: "Error: AI failed to generate a response. Please check your API usage." });
+    }
 
   } catch (error) {
-    res.status(500).json({ reply: "Connection Error: Failed to reach Together AI services." });
+    res.status(500).json({ reply: "Connection Error: Failed to reach Google AI services." });
   }
 }
