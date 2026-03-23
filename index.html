@@ -6,84 +6,38 @@
     <title>BitsySAH - Sahara AI Agent</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .bitsy-bg { background-color: #000000; }
-        .bitsy-yellow-text { color: #facc15; }
-        .chat-bubble { border-radius: 20px; }
-        .bitsy-avatar-container {
-            width: 3rem; height: 3rem;
-            border-radius: 9999px;
-            overflow: hidden;
-            border: 2px solid #facc15;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .bitsy-avatar-img { width: 100%; height: 100%; object-fit: cover; }
-        .hero-banner {
-            background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('SAHbanner.jpg');
-            background-size: cover;
-            background-position: center;
-            border-bottom: 1px solid #1a1a1a;
-        }
-        .typing-dots span { animation: blink 1.4s infinite both; }
-        .typing-dots span:nth-child(2) { animation-delay: .2s; }
-        .typing-dots span:nth-child(3) { animation-delay: .4s; }
-        @keyframes blink { 0% { opacity: .2; } 20% { opacity: 1; } 100% { opacity: .2; } }
+        body { background-color: #000; color: white; font-family: sans-serif; }
+        .chat-container { height: calc(100vh - 160px); overflow-y: auto; scroll-behavior: smooth; }
+        .chat-bubble { border-radius: 18px; max-width: 85%; }
+        .bg-bitsy { background-color: #111; border: 1px solid #222; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
     </style>
 </head>
-<body class="bitsy-bg text-white font-sans min-h-screen flex flex-col">
+<body class="flex flex-col min-h-screen">
 
-    <header class="p-4 border-b border-gray-900 flex justify-between items-center sticky top-0 bg-black/80 backdrop-blur-md z-30">
+    <header class="p-4 border-b border-gray-800 flex items-center justify-between sticky top-0 bg-black/90 backdrop-blur-sm z-50">
         <div class="flex items-center gap-3">
-            <div class="bitsy-avatar-container">
-                <img src="Bitsy.png" alt="Bitsy" class="bitsy-avatar-img">
+            <img src="Bitsy.png" class="w-10 h-10 rounded-full border border-yellow-500">
+            <div>
+                <h1 class="font-bold text-lg text-white">Bitsy<span class="text-yellow-500">SAH</span></h1>
+                <p class="text-[10px] text-green-500 uppercase tracking-widest font-mono">● System Online</p>
             </div>
-            <h1 class="text-xl font-bold tracking-tight text-white">BitsySAH</h1>
         </div>
-        <span class="text-[10px] text-gray-500 font-mono">SAHARA_NETWORK_v1</span>
+        <div class="text-[10px] text-gray-500 font-mono hidden md:block">MODEL: GEMINI-1.5-FLASH</div>
     </header>
 
-    <section class="hero-banner w-full py-12 px-6 text-center">
-        <div class="max-w-4xl mx-auto">
-            <h2 class="text-3xl md:text-5xl font-black mb-2 uppercase italic">
-                AI For <span class="bitsy-yellow-text">Market Intelligence</span>
-            </h2>
-            <p class="text-gray-400 text-xs md:text-sm font-light tracking-wide">
-                Decentralized AI Infrastructure by Sahara AI
-            </p>
-        </div>
-    </section>
-
-    <main class="flex-grow p-4 md:p-8 overflow-y-auto max-w-3xl mx-auto w-full" id="chat-box">
-        <div class="flex gap-4 mb-8">
-            <div class="bitsy-avatar-container flex-shrink-0">
-                <img src="Bitsy.png" alt="Bitsy" class="bitsy-avatar-img">
-            </div>
-            <div class="bg-[#111] p-4 chat-bubble max-w-[85%] text-sm border border-gray-800">
-                <p class="mb-1 text-yellow-500 font-bold text-[10px] uppercase tracking-widest">Bitsy</p>
-                Bitsy is ready! How can I help you explore Sahara AI today?
+    <main id="chat-box" class="chat-container p-4 space-y-6 flex-grow">
+        <div class="flex gap-3">
+            <img src="Bitsy.png" class="w-8 h-8 rounded-full flex-shrink-0">
+            <div class="bg-bitsy p-4 chat-bubble text-sm">
+                <p class="text-yellow-500 font-bold text-[10px] uppercase mb-1">Bitsy</p>
+                Bitsy is online. How can I assist you with Sahara AI today?
             </div>
         </div>
     </main>
 
-    <footer class="p-4 md:p-6 bg-black border-t border-gray-900 sticky bottom-0">
-        <div class="max-w-3xl mx-auto flex gap-3 bg-[#111] rounded-2xl p-2 items-center border border-gray-800">
-            <input type="text" id="user-input" placeholder="Ask Bitsy something..." 
-                class="bg-transparent border-none focus:ring-0 flex-grow px-4 py-3 text-sm outline-none text-white"
-                onkeypress="if(event.key === 'Enter') sendMessage()">
-            <button onclick="sendMessage()" class="bg-yellow-400 text-black px-6 py-3 rounded-xl font-black hover:bg-yellow-300 transition-all active:scale-95 uppercase text-[10px]">
-                Send
-            </button>
-        </div>
-    </footer>
-
-    <script>
-        async function sendMessage() {
-            const input = document.getElementById('user-input');
-            const chatBox = document.getElementById('chat-box');
-            const userText = input.value.trim();
-            if (!userText) return;
-
-            chatBox.innerHTML += `
-                <div class="flex gap-4 mb-8 flex-row-reverse">
-                    <div class="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center
+    <footer class="p-4 bg-black border-t border-gray-900 sticky bottom-0">
+        <div class="max-w-4xl mx-auto flex gap-2">
+            <input type="text" id="user-input" placeholder="Type your message..." 
+                class="flex-grow bg-[#111] border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500 transition-all text-white">
