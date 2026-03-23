@@ -41,3 +41,73 @@
         <div class="max-w-4xl mx-auto flex gap-2">
             <input type="text" id="user-input" placeholder="Type your message..." 
                 class="flex-grow bg-[#111] border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500 transition-all text-white">
+            <button id="send-btn" class="bg-yellow-400 text-black px-6 py-3 rounded-xl font-bold text-sm hover:bg-yellow-300 active:scale-95 transition-all">
+                SEND
+            </button>
+        </div>
+    </footer>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const input = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        async function sendMessage() {
+            const text = input.value.trim();
+            if (!text) return;
+
+            // 1. Append User Message
+            chatBox.innerHTML += `
+                <div class="flex gap-3 flex-row-reverse">
+                    <div class="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center text-black font-bold text-[10px] flex-shrink-0">YOU</div>
+                    <div class="bg-yellow-400 text-black p-4 chat-bubble text-sm font-medium">
+                        ${text}
+                    </div>
+                </div>`;
+            
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // 2. Append Thinking Indicator
+            const thinkingId = "bitsy-" + Date.now();
+            chatBox.innerHTML += `
+                <div class="flex gap-3" id="${thinkingId}">
+                    <img src="Bitsy.png" class="w-8 h-8 rounded-full flex-shrink-0">
+                    <div class="bg-bitsy p-4 chat-bubble text-sm text-gray-400 italic">
+                        Bitsy is thinking...
+                    </div>
+                </div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                // 3. Call API
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text }),
+                });
+                const data = await response.json();
+
+                // 4. Update UI with Response
+                const responseDiv = document.getElementById(thinkingId).querySelector('.chat-bubble');
+                responseDiv.classList.remove('italic', 'text-gray-400');
+                responseDiv.innerHTML = `
+                    <p class="text-yellow-500 font-bold text-[10px] uppercase mb-1">Bitsy</p>
+                    ${data.reply || data.error}
+                `;
+            } catch (error) {
+                const responseDiv = document.getElementById(thinkingId).querySelector('.chat-bubble');
+                responseDiv.innerHTML = `<p class="text-red-500 text-xs">Error: Connection lost.</p>`;
+            }
+            
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Event Listeners
+        sendBtn.addEventListener('click', sendMessage);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
