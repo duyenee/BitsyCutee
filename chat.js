@@ -1,64 +1,28 @@
-<script>
-    const chatBox = document.getElementById('chat-box');
-    const input = document.getElementById('user-input');
+export default async function handler(req, res) {
+  const { message } = req.body;
+  const API_KEY = process.env.GEMINI_API_KEY;
 
-    // Hàm xử lý gửi tin nhắn
-    async function sendMessage() {
-        const text = input.value.trim();
-        if (!text) return; // Không gửi nếu ô nhập trống
+  try {
+    // Sử dụng endpoint v1 và model tiêu chuẩn để tránh lỗi không tìm thấy
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-        // 1. Hiển thị tin nhắn của người dùng
-        chatBox.innerHTML += `
-            <div class="flex gap-3 flex-row-reverse">
-                <div class="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center text-black font-bold text-[10px] flex-shrink-0">YOU</div>
-                <div class="bg-yellow-400 text-black p-4 chat-bubble text-sm font-medium">
-                    ${text}
-                </div>
-            </div>`;
-        
-        input.value = ''; // Xóa ô nhập liệu ngay sau khi gửi
-        chatBox.scrollTop = chatBox.scrollHeight;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: message }] }]
+      }),
+    });
 
-        // 2. Hiển thị trạng thái đang xử lý
-        const thinkingId = "bitsy-" + Date.now();
-        chatBox.innerHTML += `
-            <div class="flex gap-3" id="${thinkingId}">
-                <img src="Bitsy.png" class="w-8 h-8 rounded-full flex-shrink-0">
-                <div class="bg-[#111] border border-gray-800 p-4 chat-bubble text-sm text-gray-400 italic">
-                    Bitsy is thinking...
-                </div>
-            </div>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
+    const data = await response.json();
 
-        try {
-            // 3. Gọi API xử lý
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text }),
-            });
-            const data = await response.json();
-
-            // 4. Cập nhật câu trả lời từ AI
-            const responseDiv = document.getElementById(thinkingId).querySelector('.chat-bubble');
-            responseDiv.classList.remove('italic', 'text-gray-400');
-            responseDiv.innerHTML = `
-                <p class="text-yellow-500 font-bold text-[10px] uppercase mb-1">Bitsy</p>
-                ${data.reply || data.error}
-            `;
-        } catch (error) {
-            const responseDiv = document.getElementById(thinkingId).querySelector('.chat-bubble');
-            responseDiv.innerHTML = `<p class="text-red-500 text-xs">Error: Connection lost.</p>`;
-        }
-        
-        chatBox.scrollTop = chatBox.scrollHeight;
+    if (data.error) {
+      return res.status(500).json({ reply: "Lỗi Google: " + data.error.message });
     }
 
-    // LẮNG NGHE SỰ KIỆN PHÍM ENTER
-    input.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
-            e.preventDefault(); // Ngăn việc xuống dòng nếu có
-            sendMessage();
-        }
-    });
-</script>
+    const reply = data.candidates[0].content.parts[0].text;
+    res.status(200).json({ reply: reply });
+  } catch (error) {
+    res.status(500).json({ reply: "Lỗi kết nối API." });
+  }
+}
