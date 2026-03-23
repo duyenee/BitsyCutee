@@ -10,7 +10,6 @@
         .bitsy-yellow-text { color: #facc15; }
         .chat-bubble { border-radius: 20px; }
         
-        /* Avatar Styling - Synchronized with Bitsy.png */
         .bitsy-avatar-container {
             width: 3.5rem; height: 3.5rem;
             border-radius: 9999px;
@@ -21,24 +20,15 @@
             align-items: center;
             justify-content: center;
         }
-        .bitsy-avatar-img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-        }
+        .bitsy-avatar-img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Banner Styling - Synchronized with SAHbanner.jpg */
+        /* Linked to SAHbanner.jpg from your GitHub */
         .hero-banner {
             background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('SAHbanner.jpg');
             background-size: cover;
             background-position: center;
             border-bottom: 1px solid #1a1a1a;
         }
-
-        /* Animation for Bitsy's "thinking" state */
-        .typing-dots span { animation: blink 1.4s infinite both; }
-        .typing-dots span:nth-child(2) { animation-delay: .2s; }
-        .typing-dots span:nth-child(3) { animation-delay: .4s; }
-        @keyframes blink { 0% { opacity: .2; } 20% { opacity: 1; } 100% { opacity: .2; } }
     </style>
 </head>
 <body class="bitsy-bg text-white font-sans min-h-screen flex flex-col">
@@ -46,11 +36,10 @@
     <header class="p-4 border-b border-gray-900 flex justify-between items-center sticky top-0 bg-black/80 backdrop-blur-md z-30">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-full border border-yellow-500/50 overflow-hidden">
-                <img src="Bitsy.png" alt="Bitsy Avatar" class="w-full h-full object-cover">
+                <img src="Bitsy.png" alt="Bitsy" class="w-full h-full object-cover">
             </div>
-            <h1 class="text-xl font-bold tracking-tight text-white">BitsySAH</h1>
+            <h1 class="text-xl font-bold tracking-tight">BitsySAH</h1>
         </div>
-        <span class="text-[10px] text-gray-500 font-mono text-right">SAHARA_NETWORK_v1</span>
     </header>
 
     <section class="hero-banner w-full py-16 px-6 text-center">
@@ -58,81 +47,26 @@
             <h2 class="text-3xl md:text-5xl font-black mb-4 uppercase italic">
                 AI For <span class="bitsy-yellow-text">Market Intelligence</span>
             </h2>
-            <p class="text-gray-400 text-sm md:text-base font-light tracking-wide">
-                Experience Decentralized AI with the Sahara AI Infrastructure
-            </p>
+            <p class="text-gray-400 font-light">Decentralized AI Infrastructure by Sahara AI</p>
         </div>
     </section>
 
-    <main class="flex-grow p-4 md:p-8 overflow-y-auto max-w-4xl mx-auto w-full" id="chat-box">
+    <main class="flex-grow p-4 md:p-8 max-w-4xl mx-auto w-full" id="chat-box">
         <div class="flex gap-4 mb-8">
-            <div class="bitsy-avatar-container flex-shrink-0 shadow-lg shadow-yellow-500/10">
+            <div class="bitsy-avatar-container flex-shrink-0">
                 <img src="Bitsy.png" alt="Bitsy" class="bitsy-avatar-img">
             </div>
-            <div class="bg-[#111] p-5 chat-bubble max-w-[85%] text-sm md:text-base border border-gray-800">
-                <p class="mb-1 text-yellow-500 font-bold text-xs uppercase">Bitsy Response</p>
-                Hello Henry! I am Bitsy 🦊, your dedicated Sahara AI Agent. How can I assist you with the network today?
+            <div class="bg-[#111] p-5 chat-bubble max-w-[85%] text-sm border border-gray-800">
+                Hi! I am Bitsy 🦊. Welcome to my Sahara AI interface.
             </div>
         </div>
     </main>
 
-    <footer class="p-4 md:p-6 bg-black border-t border-gray-900 sticky bottom-0">
+    <footer class="p-4 md:p-6 bg-black border-t border-gray-900">
         <div class="max-w-4xl mx-auto flex gap-3 bg-[#111] rounded-2xl p-2 items-center border border-gray-800">
-            <input type="text" id="user-input" placeholder="Type your message to Bitsy..." 
-                class="bg-transparent border-none focus:ring-0 flex-grow px-4 py-3 text-sm outline-none text-white">
-            <button onclick="askBitsy()" class="bg-yellow-400 text-black px-6 md:px-10 py-3 rounded-xl font-black hover:bg-yellow-300 transition-all active:scale-95 uppercase text-[10px]">
-                Send
-            </button>
+            <input type="text" placeholder="Message Bitsy..." class="bg-transparent flex-grow px-4 py-3 outline-none">
+            <button class="bg-yellow-400 text-black px-6 py-3 rounded-xl font-black uppercase text-[10px]">Send</button>
         </div>
     </footer>
-
-    <script>
-        const bitsyImg = 'Bitsy.png';
-
-        function askBitsy() {
-            const input = document.getElementById('user-input');
-            const chatBox = document.getElementById('chat-box');
-            if (!input.value.trim()) return;
-
-            // Display User Message
-            chatBox.innerHTML += `
-                <div class="flex gap-4 mb-8 flex-row-reverse">
-                    <div class="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-black font-bold text-[10px]">YOU</div>
-                    <div class="bg-yellow-400 text-black p-4 chat-bubble max-w-[85%] text-sm font-medium">
-                        ${input.value}
-                    </div>
-                </div>`;
-
-            // Display Thinking/Processing State
-            const thinkingId = 'bitsy-' + Date.now();
-            chatBox.innerHTML += `
-                <div class="flex gap-4 mb-8" id="${thinkingId}">
-                    <div class="bitsy-avatar-container flex-shrink-0">
-                        <img src="${bitsyImg}" alt="Bitsy" class="bitsy-avatar-img">
-                    </div>
-                    <div class="bg-[#111] p-5 chat-bubble max-w-[85%] text-sm border border-gray-800">
-                        <div class="typing-dots italic text-gray-500 text-xs">Bitsy is analyzing<span>.</span><span>.</span><span>.</span></div>
-                    </div>
-                </div>`;
-            
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            // Simulate Agent Response
-            setTimeout(() => {
-                const thinkingMsg = document.getElementById(thinkingId);
-                thinkingMsg.innerHTML = `
-                    <div class="bitsy-avatar-container flex-shrink-0">
-                        <img src="${bitsyImg}" alt="Bitsy" class="bitsy-avatar-img">
-                    </div>
-                    <div class="bg-[#111] p-5 chat-bubble max-w-[85%] text-sm border border-gray-800 shadow-inner">
-                        <p class="mb-1 text-yellow-500 font-bold text-xs uppercase">Bitsy Response</p>
-                        Regarding your query about "${input.value}", I am currently retrieving the latest data from the Sahara AI mainnet.
-                    </div>`;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }, 1200);
-
-            input.value = '';
-        }
-    </script>
 </body>
 </html>
