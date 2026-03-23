@@ -66,14 +66,14 @@
             </div>
             <div class="bg-[#111] p-4 chat-bubble max-w-[85%] text-sm border border-gray-800">
                 <p class="mb-1 text-yellow-500 font-bold text-[10px] uppercase tracking-widest">Bitsy</p>
-                Hi Henry! I'm Bitsy 🦊. I'm connected to my AI brain now. How can I help you with Sahara AI or your projects today?
+                Hi Henry! I am now connected to my ChatGPT brain. How can I help you explore Sahara AI today?
             </div>
         </div>
     </main>
 
     <footer class="p-4 md:p-6 bg-black border-t border-gray-900 sticky bottom-0">
         <div class="max-w-3xl mx-auto flex gap-3 bg-[#111] rounded-2xl p-2 items-center border border-gray-800">
-            <input type="text" id="user-input" placeholder="Type a message..." 
+            <input type="text" id="user-input" placeholder="Ask Bitsy something..." 
                 class="bg-transparent border-none focus:ring-0 flex-grow px-4 py-3 text-sm outline-none text-white"
                 onkeypress="if(event.key === 'Enter') sendMessage()">
             <button onclick="sendMessage()" class="bg-yellow-400 text-black px-6 py-3 rounded-xl font-black hover:bg-yellow-300 transition-all active:scale-95 uppercase text-[10px]">
@@ -131,7 +131,7 @@
                 `;
             } catch (error) {
                 const responseDiv = document.getElementById(thinkingId).querySelector('.chat-bubble');
-                responseDiv.innerHTML = `<p class="text-red-500 text-xs">Error: Could not connect to the AI brain. Check your Vercel Environment Variables.</p>`;
+                responseDiv.innerHTML = `<p class="text-red-500 text-xs">Error: Bitsy's brain is offline. Check your OpenAI credits or Vercel Environment Variables.</p>`;
             }
             
             chatBox.scrollTop = chatBox.scrollHeight;
