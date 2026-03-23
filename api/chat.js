@@ -7,12 +7,14 @@ export default async function handler(req, res) {
   const API_KEY = process.env.GEMINI_API_KEY;
 
   if (!API_KEY) {
-    return res.status(500).json({ reply: "Thiếu GEMINI_API_KEY trong Vercel Environment Variables." });
+    return res.status(500).json({ reply: "Lỗi: Chưa cấu hình GEMINI_API_KEY trên Vercel." });
   }
 
   try {
-    // Sử dụng endpoint v1 và model gemini-1.5-flash (phiên bản ổn định)
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+    // URL chuẩn xác nhất cho Gemini 1.5 Flash
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -20,7 +22,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `You are Bitsy, a smart AI Agent for Sahara AI. Help Henry with Web3. Answer concisely. User: ${message}`
+            text: `You are Bitsy, a smart AI Agent for Sahara AI. Help Henry with Web3. Answer concisely. User message: ${message}`
           }]
         }]
       }),
@@ -28,20 +30,21 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // Kiểm tra lỗi từ Google
+    // Nếu Google báo lỗi (như lỗi model not found bạn vừa gặp)
     if (data.error) {
-      return res.status(500).json({ reply: "Google Error: " + data.error.message });
+      console.error('Google API Error:', data.error);
+      return res.status(500).json({ reply: `Google AI Error: ${data.error.message}` });
     }
 
-    // Kiểm tra cấu trúc phản hồi
-    if (!data.candidates || data.candidates.length === 0) {
-      return res.status(500).json({ reply: "AI không thể tạo câu trả lời. Thử lại sau nhé!" });
+    // Kiểm tra xem có phản hồi từ AI không
+    if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
+      const reply = data.candidates[0].content.parts[0].text;
+      res.status(200).json({ reply: reply });
+    } else {
+      res.status(500).json({ reply: "AI không trả về nội dung. Hãy kiểm tra lại API Key." });
     }
-
-    const reply = data.candidates[0].content.parts[0].text;
-    res.status(200).json({ reply: reply });
 
   } catch (error) {
-    res.status(500).json({ error: "Lỗi kết nối hệ thống." });
+    res.status(500).json({ error: "Lỗi kết nối Serverless Function." });
   }
 }
