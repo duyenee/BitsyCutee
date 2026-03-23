@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // URL chuẩn xác nhất cho Gemini 1.5 Flash
+    // Sử dụng model 'gemini-1.5-flash' với đường dẫn v1beta chuẩn của Google
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
     const response = await fetch(url, {
@@ -30,14 +30,25 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // Nếu Google báo lỗi (như lỗi model not found bạn vừa gặp)
+    // Nếu vẫn báo lỗi 'not found', hệ thống sẽ tự động thử dùng model 'gemini-pro'
+    if (data.error && data.error.message.includes("not found")) {
+       const retryUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
+       const retryRes = await fetch(retryUrl, {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ contents: [{ parts: [{ text: message }] }] }),
+       });
+       const retryData = await retryRes.json();
+       if (retryData.candidates) {
+         return res.status(200).json({ reply: retryData.candidates[0].content.parts[0].text });
+       }
+    }
+
     if (data.error) {
-      console.error('Google API Error:', data.error);
       return res.status(500).json({ reply: `Google AI Error: ${data.error.message}` });
     }
 
-    // Kiểm tra xem có phản hồi từ AI không
-    if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
+    if (data.candidates && data.candidates[0].content) {
       const reply = data.candidates[0].content.parts[0].text;
       res.status(200).json({ reply: reply });
     } else {
